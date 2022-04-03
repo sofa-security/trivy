@@ -36,6 +36,10 @@ type ReportOption struct {
 	Output         io.Writer
 	Severities     []dbTypes.Severity
 	ListAllPkgs    bool
+
+	//remote result report
+	ResultRemote string
+	TaskInfo     string
 }
 
 // NewReportOption is the factory method to return ReportOption
@@ -43,6 +47,9 @@ func NewReportOption(c *cli.Context) ReportOption {
 	return ReportOption{
 		output:       c.String("output"),
 		Format:       c.String("format"),
+		ResultRemote: c.String("resultRemote"),
+		TaskInfo:     c.String("task-process"),
+
 		Template:     c.String("template"),
 		IgnorePolicy: c.String("ignore-policy"),
 
@@ -101,6 +108,7 @@ func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 		if output, err = os.Create(c.output); err != nil {
 			return xerrors.Errorf("failed to create an output file: %w", err)
 		}
+
 	}
 
 	c.Output = output

@@ -24,6 +24,8 @@ var Now = time.Now
 type Option struct {
 	Format         string
 	Output         io.Writer
+	ResultRemote   string
+	TaskInfo       string
 	Severities     []dbTypes.Severity
 	OutputTemplate string
 	AppVersion     string
@@ -37,6 +39,11 @@ type Option struct {
 func Write(report types.Report, option Option) error {
 	var writer Writer
 	switch option.Format {
+	case "remote":
+		writer = &RemoteWriter{
+			Remote:   option.ResultRemote,
+			TaskInfo: option.TaskInfo,
+		}
 	case "table":
 		writer = &TableWriter{
 			Output:             option.Output,

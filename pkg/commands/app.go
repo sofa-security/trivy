@@ -41,7 +41,7 @@ var (
 		Name:    "format",
 		Aliases: []string{"f"},
 		Value:   "table",
-		Usage:   "format (table, json, sarif, template)",
+		Usage:   "format (table, json, sarif, template, remote)",
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
@@ -64,7 +64,7 @@ var (
 	outputFlag = cli.StringFlag{
 		Name:    "output",
 		Aliases: []string{"o"},
-		Usage:   "output file name",
+		Usage:   "output file name or remote addr",
 		EnvVars: []string{"TRIVY_OUTPUT"},
 	}
 
@@ -324,6 +324,19 @@ var (
 		Name:    "custom-headers",
 		Usage:   "custom headers in client/server mode",
 		EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
+	}
+
+	taskProcessFlag = cli.StringFlag{
+		Name:    "task-process",
+		Usage:   "taskId|processNo|taskProcessId",
+		EnvVars: []string{"TRIVY_TASK_PROCESS"},
+	}
+
+	resultRemoteFlag = cli.StringFlag{
+		Name:    "resultRemote",
+		Usage:   "result http request send address",
+		Value:   "http://127.0.0.1:8098",
+		EnvVars: []string{"TRIVY_RESULT_REMOTE"},
 	}
 
 	// Global flags
@@ -632,6 +645,8 @@ func NewClientCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&insecureFlag,
+			&taskProcessFlag,
+			&resultRemoteFlag,
 
 			&token,
 			&tokenHeader,

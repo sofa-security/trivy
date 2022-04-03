@@ -103,6 +103,8 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
+		ResultRemote:       opt.ResultRemote,
+		TaskInfo:           opt.TaskInfo,
 		Severities:         opt.Severities,
 		OutputTemplate:     opt.Template,
 		IncludeNonFailures: opt.IncludeNonFailures,
