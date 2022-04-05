@@ -14,7 +14,8 @@ import (
 // imageScanner initializes a container image scanner in standalone mode
 // $ trivy image alpine:3.15
 func imageScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
+	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS,
+		conf.FlagDockerOption.UserName, conf.FlagDockerOption.Password, conf.FlagDockerOption.RegistryToken)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -42,7 +43,8 @@ func archiveScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, f
 func remoteImageScanner(ctx context.Context, conf scannerConfig) (
 	scanner.Scanner, func(), error) {
 	// Scan an image in Docker Engine, Docker Registry, etc.
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
+	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS,
+		conf.FlagDockerOption.UserName, conf.FlagDockerOption.Password, conf.FlagDockerOption.RegistryToken)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

@@ -339,6 +339,30 @@ var (
 		EnvVars: []string{"TRIVY_RESULT_REMOTE"},
 	}
 
+	dockerAccessUserFlag = cli.StringFlag{
+		Name:    "docker-user",
+		Usage:   "access docker login to pull private image",
+		EnvVars: []string{"TRIVY_ACCESS_DOCKER_USER"},
+	}
+
+	dockerAccessPwdFlag = cli.StringFlag{
+		Name:    "docker-pwd",
+		Usage:   "access docker login to pull private image",
+		EnvVars: []string{"TRIVY_ACCESS_DOCKER_PWD"},
+	}
+
+	NonSSLDockerFlag = cli.StringFlag{
+		Name:    "non-ssl",
+		Usage:   "access docker no ssl",
+		EnvVars: []string{"TRIVY_DOCKER_NOSSL"},
+	}
+
+	accessTokenDockerFlag = cli.StringFlag{
+		Name:    "docker-regtoken",
+		Usage:   "access docker registry token",
+		EnvVars: []string{"TRIVY_DOCKER_REGTOKEN"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -647,6 +671,10 @@ func NewClientCommand() *cli.Command {
 			&insecureFlag,
 			&taskProcessFlag,
 			&resultRemoteFlag,
+			&dockerAccessUserFlag,
+			&dockerAccessPwdFlag,
+			&NonSSLDockerFlag,
+			&accessTokenDockerFlag,
 
 			&token,
 			&tokenHeader,

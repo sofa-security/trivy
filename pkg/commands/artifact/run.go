@@ -44,6 +44,9 @@ type scannerConfig struct {
 
 	// Misconfiguration scanning options
 	MisconfOption config.ScannerOption
+
+	//DockerOption for scanning
+	FlagDockerOption FlagDockerOption
 }
 
 // InitializeScanner defines the initialize function signature of scanner
@@ -249,7 +252,8 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 			Offline:           opt.OfflineScan,
 			NoProgress:        opt.NoProgress || opt.Quiet,
 		},
-		MisconfOption: configScannerOptions,
+		MisconfOption:    configScannerOptions,
+		FlagDockerOption: opt.FlagDockerOption,
 	})
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)

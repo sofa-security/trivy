@@ -23,6 +23,7 @@ type Option struct {
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
 	DisabledAnalyzers []analyzer.Type
+	FlagDockerOption
 }
 
 // NewOption is the factory method to return options
@@ -33,15 +34,16 @@ func NewOption(c *cli.Context) (Option, error) {
 	}
 
 	return Option{
-		GlobalOption:   gc,
-		ArtifactOption: option.NewArtifactOption(c),
-		DBOption:       option.NewDBOption(c),
-		ImageOption:    option.NewImageOption(c),
-		ReportOption:   option.NewReportOption(c),
-		CacheOption:    option.NewCacheOption(c),
-		ConfigOption:   option.NewConfigOption(c),
-		RemoteOption:   option.NewRemoteOption(c),
-		SbomOption:     option.NewSbomOption(c),
+		GlobalOption:     gc,
+		ArtifactOption:   option.NewArtifactOption(c),
+		DBOption:         option.NewDBOption(c),
+		ImageOption:      option.NewImageOption(c),
+		ReportOption:     option.NewReportOption(c),
+		CacheOption:      option.NewCacheOption(c),
+		ConfigOption:     option.NewConfigOption(c),
+		RemoteOption:     option.NewRemoteOption(c),
+		SbomOption:       option.NewSbomOption(c),
+		FlagDockerOption: NewFlagDockerOption(c),
 	}, nil
 }
 

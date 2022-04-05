@@ -16,10 +16,32 @@ type DockerConfig struct {
 }
 
 // GetDockerOption returns the Docker scanning options using DockerConfig
-func GetDockerOption(insecureTlsSkip bool) (types.DockerOption, error) {
+func GetDockerOption(insecureTlsSkip bool, dockerOpt ...string) (types.DockerOption, error) {
 	cfg := DockerConfig{}
 	if err := env.Parse(&cfg); err != nil {
 		return types.DockerOption{}, xerrors.Errorf("unable to parse environment variables: %w", err)
+	}
+	if dockerOpt != nil {
+		n := len(dockerOpt)
+		switch n {
+		case 2: //NonSSL true, if len == 2
+			if dockerOpt[0] != "" && dockerOpt[1] != "" {
+				cfg.UserName = dockerOpt[0]
+				cfg.Password = dockerOpt[1]
+				cfg.NonSSL = true
+			}
+		case 3:
+			if dockerOpt[0] != "" && dockerOpt[1] != "" {
+				cfg.UserName = dockerOpt[0]
+				cfg.Password = dockerOpt[1]
+				cfg.NonSSL = true
+			}
+			if dockerOpt[2] != "" {
+				cfg.RegistryToken = dockerOpt[2]
+			}
+		default:
+			//do noting
+		}
 	}
 
 	return types.DockerOption{
