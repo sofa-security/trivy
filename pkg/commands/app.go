@@ -691,6 +691,28 @@ func NewClientCommand() *cli.Command {
 	}
 }
 
+func RunClientCommand(args []string) error {
+	cli.VersionPrinter = func(c *cli.Context) {
+		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
+	}
+
+	app := cli.NewApp()
+	app.Name = "trivy"
+	app.ArgsUsage = "target"
+	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
+	app.EnableBashCompletion = true
+	app.Flags = globalFlags
+	set := flag.NewFlagSet("scanClient", 0)
+	_ = set.Parse(args)
+
+	c := cli.NewContext(app, set, nil)
+
+	clientApp := NewClientCommand()
+	err := clientApp.Run(c)
+
+	return err
+}
+
 // NewServerCommand is the factory method to add server command
 func NewServerCommand() *cli.Command {
 	return &cli.Command{
