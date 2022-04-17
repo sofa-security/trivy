@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -351,9 +350,10 @@ var (
 		EnvVars: []string{"TRIVY_ACCESS_DOCKER_PWD"},
 	}
 
-	NonSSLDockerFlag = cli.StringFlag{
+	NonSSLDockerFlag = cli.BoolFlag{
 		Name:    "non-ssl",
 		Usage:   "access docker no ssl",
+		Value:   true,
 		EnvVars: []string{"TRIVY_DOCKER_NOSSL"},
 	}
 
@@ -412,28 +412,36 @@ func NewApp(version string) *cli.App {
 		NewVersionCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
-
 	return app
 }
 
-func RunServerCommand(args []string) error {
+func RunCommand(args []string) error {
 	cli.VersionPrinter = func(c *cli.Context) {
 		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
 	}
 
 	app := cli.NewApp()
 	app.Name = "trivy"
+	app.Version = "dev-imagescan"
 	app.ArgsUsage = "target"
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true
 	app.Flags = globalFlags
-	set := flag.NewFlagSet("scanServer", 0)
-	_ = set.Parse(args)
 
-	c := cli.NewContext(app, set, nil)
-
-	serverApp := NewServerCommand()
-	err := serverApp.Run(c)
+	//serverApp := NewServerCommand()
+	app.Commands = []*cli.Command{
+		NewImageCommand(),
+		NewFilesystemCommand(),
+		NewRootfsCommand(),
+		NewSbomCommand(),
+		NewRepositoryCommand(),
+		NewScanClientCommand(),
+		NewServerCommand(),
+		NewConfigCommand(),
+		NewPluginCommand(),
+		NewVersionCommand(),
+	}
+	err := app.Run(args)
 
 	return err
 }
@@ -671,6 +679,54 @@ func NewClientCommand() *cli.Command {
 			&insecureFlag,
 			&taskProcessFlag,
 			&resultRemoteFlag,
+
+			&token,
+			&tokenHeader,
+			&customHeaders,
+
+			// original flags
+			&cli.StringFlag{
+				Name:    "remote",
+				Value:   "http://localhost:4954",
+				Usage:   "server address",
+				EnvVars: []string{"TRIVY_REMOTE"},
+			},
+		},
+	}
+}
+
+// NewScanClientCommand is the factory method to add client command
+func NewScanClientCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "client",
+		Aliases:   []string{"c"},
+		ArgsUsage: "image_name",
+		Usage:     "client mode",
+		Action:    artifact.ImageRun,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&removedPkgsFlag,
+			&vulnTypeFlag,
+			&securityChecksFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+			stringSliceFlag(configPolicy),
+			&listAllPackages,
+			&offlineScan,
+			&insecureFlag,
+			&taskProcessFlag,
+			&resultRemoteFlag,
 			&dockerAccessUserFlag,
 			&dockerAccessPwdFlag,
 			&NonSSLDockerFlag,
@@ -689,28 +745,6 @@ func NewClientCommand() *cli.Command {
 			},
 		},
 	}
-}
-
-func RunClientCommand(args []string) error {
-	cli.VersionPrinter = func(c *cli.Context) {
-		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
-	}
-
-	app := cli.NewApp()
-	app.Name = "trivy"
-	app.ArgsUsage = "target"
-	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
-	app.EnableBashCompletion = true
-	app.Flags = globalFlags
-	set := flag.NewFlagSet("scanClient", 0)
-	_ = set.Parse(args)
-
-	c := cli.NewContext(app, set, nil)
-
-	clientApp := NewClientCommand()
-	err := clientApp.Run(c)
-
-	return err
 }
 
 // NewServerCommand is the factory method to add server command
