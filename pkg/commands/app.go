@@ -441,6 +441,7 @@ func RunCommand(args []string) error {
 		NewPluginCommand(),
 		NewVersionCommand(),
 	}
+	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 	err := app.Run(args)
 
 	return err
